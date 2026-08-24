@@ -4,13 +4,14 @@ class GeometricSieve:
     """
     O(1) geometric filter for 3-body configurations.
     Uses q = r / R (inradius / circumradius).
-    Works for both (3,2) and (3,3) positions.
+    Works for both (3,2) and (3,3) with varying z (True 3D).
     """
 
     def shape_parameter(self, pos: np.ndarray) -> float:
         """
         Compute q = r/R.
-        Returns \~0.5 for equilateral, → 0 for degenerate (collinear).
+        Returns ~0.5 for equilateral, → 0 for degenerate.
+        True 3D: uses np.linalg.norm on full vecto.
         """
         a = np.linalg.norm(pos[1] - pos[0])
         b = np.linalg.norm(pos[2] - pos[1])
@@ -33,5 +34,5 @@ class GeometricSieve:
         return self.shape_parameter(pos) > threshold
 
     def batch_filter(self, positions: np.ndarray, threshold: float = 5e-4) -> np.ndarray:
-        """Filter a batch of configurations. positions shape: (N, 3, 2) or (N, 3, 3)"""
+        """Filter batch. positions: (N,3,2) or (N,3,3) with varying z"""
         return np.array([self.is_stable(p, threshold) for p in positions])
